@@ -1,0 +1,9 @@
+<% include ../views/partials/_header %>
+  <body>
+    <form method="POST" action="/urls/<%= shortURL %>">
+      <p><%= 'shortURL:' + shortURL %></p>
+      <input type="text" name="longURL" value="<%= urlDatabase[shortURL] %>">
+      <input type="submit" value="Update">
+    </form>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+
+    <% include ../views/partials/_header %>
+
+  <body>
+    <ul>
+      <% for (const shortID in urlsDatabase) { %>
+        <li> <%= shortID + ": " + urlsDatabase[shortID] %>
+          <form method="POST" action="/urlsDatabase/<%= shortID %>/delete">
+            <a href= "">Edit</a>
+            <input type="submit" value="Delete">
+          </form>
+        </li>
+      <% } %>
+    </ul>
+    <a href= "">create short new url</a>
+  </body>
+</html>
