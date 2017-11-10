@@ -1,10 +1,14 @@
-
-    <% include ../views/partials/_header %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TinyApp</title>
+  </head>
   <body>
+    <% include ../views/partials/_header %>
     <ul>
-      <% for (const shortID in urlsDatabase) { %>
+      <% for (let shortID in urlsDatabase) { %>
         <li> <%= shortID + ": " + urlsDatabase[shortID] %>
-          <form method="POST" action="/urlsDatabase/<%= shortID %>/delete">
+          <form method="POST" action="/urls/<%= shortID %>/delete">
             <a href= "">Edit</a>
             <input type="submit" value="Delete">
           </form>

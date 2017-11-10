@@ -1,10 +1,14 @@
-<% include ../views/partials/_header %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TinyApp</title>
+  </head>
   <body>
+    <% include ../views/partials/_header %>
     <form method="POST" action="/urls/<%= shortURL %>">
       <p><%= 'shortURL:' + shortURL %></p>
       <input type="text" name="longURL" value="<%= urlDatabase[shortURL] %>">
       <input type="submit" value="Update">
     </form>
-
   </body>
 </html>
