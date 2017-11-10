@@ -18,7 +18,7 @@ const users = {
 
 function currentUser(users, userID) {
   for (let user in users) {
-    if (users[user].id === id) {
+    if (users[user].id !== id) {
       return true;
     }
   }
@@ -34,19 +34,10 @@ function takenEmail(users, email) {
   return false;
 }
 
-function userValidation(users, email) {
+function findUserByEmail(users, email) {
   for (let user in users) {
     if (users[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function userValidationPassword(users, password) {
-  for (let user in users) {
-    if (users[user].password === password) {
-      return true;
+      return users[user];
     }
   }
   return false;
@@ -121,37 +112,42 @@ app.get("/login", (req, res) => {
   let templatesVars = {
     user: users[req.cookies["user_id"]],
   };
+  if (currentUser(templatesVars.user)) {
+    res.sendStatus(403);
+    return;
+  };
+
   res.render("urls_login", templatesVars);
   // res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  let userID = generateRandomString();
-  users[userID]= {
-    id: userID,
-    email: req.body.email,
-    password: req.body.password
-  };
+  // let userID = generateRandomString();
+  // users[userID] = {
+  //   id: userID,
+  //   email: req.body.email,
+  //   password: req.body.password
+  // };
 
+// if (currentUser(users, userID)) {
+//     res.sendStatus(400);
+//     return;
+//   };
 
-if (currentUser(users, userID)) {
-    res.sendStatus(400);
-    return;
-  };
+const user = findUserByEmail(users, req.body.email);
 
-if (!userValidation(users, req.body.email)) {
+if (!user) {
     res.sendStatus(403);
     return;
   };
 
-if (!userValidationPassword(users, req.body.password)) {
+if (user.password !== req.body.password) {
     res.sendStatus(403);
     return;
   };
-
 
   // TODO: look up user id
-  res.cookie("user_id", userID);
+  res.cookie("user_id", user.id);
   res.redirect("/urls");
 });
 
