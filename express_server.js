@@ -79,20 +79,18 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  const user = findUserByEmail(users, req.body.email);
   let templateVars = {
     user: users[req.cookies["user_id"]],
   }
-  res.render("urls_new", templateVars);
+    if (!user) {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
-app.get("/urls/:id", (req, res) => {
-  let templatesVars = {
-    user: users[req.cookies["user_id"]],
-    shortURL:     req.params.id,
-    urlDatabase:  urlDatabase
-  };
-  res.render("urls_show", templatesVars);
-});
+
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL]; //when we use url, always use req.params. 234523
@@ -100,6 +98,10 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  if (!req.cookies.user_id) {
+    res.send(403);
+    return;
+  };
   console.log(generateRandomString(), req.body);
   urlDatabase[generateRandomString()] = req.body.longURL;
   console.log(urlDatabase);
@@ -122,31 +124,15 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  // let userID = generateRandomString();
-  // users[userID] = {
-  //   id: userID,
-  //   email: req.body.email,
-  //   password: req.body.password
-  // };
-
-// if (currentUser(users, userID)) {
-//     res.sendStatus(400);
-//     return;
-//   };
-
-const user = findUserByEmail(users, req.body.email);
-
-if (!user) {
+  const user = findUserByEmail(users, req.body.email);
+  if (!user) {
     res.sendStatus(403);
     return;
   };
-
-if (user.password !== req.body.password) {
+  if (user.password !== req.body.password) {
     res.sendStatus(403);
     return;
   };
-
-  // TODO: look up user id
   res.cookie("user_id", user.id);
   res.redirect("/urls");
 });
@@ -178,45 +164,37 @@ app.post("/urls/:id", (req, res) => {
   shortURL = req.body.longURL;
 });
 
+app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    res.send(404);
+    return;
+  }
+  let templatesVars = {
+    user: users[req.cookies["user_id"]],
+    shortURL:     req.params.id,
+    urlDatabase:  urlDatabase
+  };
+  res.render("urls_show", templatesVars);
+});
+
 app.post("/register", (req, res) => {
-  // TODO: if email or password are missing, send 400 "Email or Password Missing"
-  // TODO: if the email is taken, send 400 "Email Taken"
-
-  // If the email and password are good, do this stuff
-  // if ( req.body.email || req.body.password ==== undefined) {
-  //   console.log("Email or password is Missing.");
-  // };
-  // if ( takenEmail(users, req.body.email)) {
-  //   console.log("Email Taken.");
-  // }
-
   if (req.body.password.length === 0  || req.body.email.length === 0) {
     res.sendStatus(400);
     return;
-  }
-
+  };
   if (takenEmail (users, req.body.email)) {
     res.sendStatus(400);
     return;
   };
-
   const userID = generateRandomString();
   users[userID]= {
     id: userID,
     email: req.body.email,
     password: req.body.password
   };
-  res.cookie("user_id", userID);
-  res.redirect("/urls");
+    res.cookie("user_id", userID);
+    res.redirect("/urls");
 });
-
-// const user =  {
-//   id: userID,
-//   email: req.body.email,
-//   password: req.body.password
-// };
-// users[userID]= user;
-
 
 
 app.listen(PORT, () => {
