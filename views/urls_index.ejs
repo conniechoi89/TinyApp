@@ -7,9 +7,9 @@
     <% include ../views/partials/_header %>
     <ul>
       <% for (let shortID in urlsDatabase) { %>
-        <li> <%= shortID + ": " + urlsDatabase[shortID] %>
+        <li> <%= shortID + ": " + urlsDatabase[shortID].longURL %>
           <form method="POST" action="/urls/<%= shortID %>/delete">
-            <a href= "">Edit</a>
+            <a href= "/urls/<%= shortID %>">Edit</a>
             <input type="submit" value="Delete">
           </form>
         </li>
